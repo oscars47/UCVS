@@ -1,4 +1,5 @@
-# UCVS![tde (1)](https://github.com/oscars47/UCVS/assets/106777951/7721f42e-6275-4127-8901-b0066e5a2fad)
+# UCVS
+![tde (1)](https://github.com/oscars47/UCVS/assets/106777951/7721f42e-6275-4127-8901-b0066e5a2fad)
 
 Welcome all ! This is a repo for the Fall 2023 P-ai project (PMs: Oscar Scholin and Graham Hirsch) to build an unsupervised clustering model to classify variable stars. The code is organized as follows: 
 
