@@ -1,0 +1,3 @@
+[DEFAULT]
+# this is the absolute path to the data, on your machine
+data_dir = absolute path here
