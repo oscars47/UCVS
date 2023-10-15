@@ -1,3 +1,9 @@
 [DEFAULT]
-# this is the absolute path to the data, on your machine
+# TEMPLATE - MAKE A COPY BEFORE SETTING THESE TO YOUR SETTINGS!!!!!!
+
+# this is the absolute path to the 'g_band' folder in the UCVS data, on your machine
 data_dir = absolute path here
+# where to store the samples after sampling
+sample_storage_dir = absolute path here
+# where pickled data is/will be located
+pickle_data_dir = absolute path here
