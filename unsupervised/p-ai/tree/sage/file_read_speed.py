@@ -115,6 +115,8 @@ plt.ylabel("Time per read (s)")
 plt.title("I/O Comparison")
 plt.show()
 
+
+#
 # num_loads = 1000
 # times = []
 # for i in range(num_loads):
