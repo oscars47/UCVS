@@ -249,9 +249,9 @@ class ASASSN_Lightcurve(Lightcurve):
         mag = np.array([float(v.replace(">", '').replace("<", '')) for v in
                lc_df['mag'].astype(str)])  # convert the mags, remove "<" and ">"
         mag_err = lc_df['mag_err'].astype(np.float32).to_numpy()
-        obj_type = lc_df["ML_classification"]
+        # obj_type = lc_df["ML_classification"]     commented out while writing twed.py
         ID = ASASSN_Lightcurve.id_from_filename(path)
-        return cls(time, mag, mag_err, ID=ID,obj_type=obj_type)
+        return cls(time, mag, mag_err, ID=ID)
 
     @staticmethod
     def id_from_filename(filename):
