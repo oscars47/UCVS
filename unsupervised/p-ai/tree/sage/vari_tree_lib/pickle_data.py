@@ -39,7 +39,7 @@ def lightly_pickle_raw_data_files(filepaths, outdir):
     for i in tqdm(range(len(filepaths)), desc='Pickling data', position=0, leave=True):
         path = filepaths[i]
         f = path.split(os.sep)[-1]
-        df = pd.read_csv(path, sep='\t', usecols=["HJD", "mag", "mag_err"])
+        df = pd.read_csv(path, sep='\t', usecols=["HJD", "mag", "mag_err","ML_classification"])
         lightly_pickle(df, join(outdir, f.replace(".dat", ".df")))
 
 

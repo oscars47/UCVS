@@ -99,7 +99,7 @@ if __name__ == "__main__":
     count = 1
     names = {}
 
-    total = 358862
+    total = 100
     twed_matrix = np.zeros((total, total))
 
     for filename in os.listdir(directory):
