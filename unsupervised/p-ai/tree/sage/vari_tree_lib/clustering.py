@@ -108,6 +108,8 @@ def k_medoids(D, k, max_steps=100, plot=False, data=None, x=None, y=None):
             newIdx = np.argmin(
                 meanDistances)  # the new medoid is the one that is has the least mean distance to the other curves in the group
             newMedoid = clusterDict[j][newIdx]
+            # move the medoid to the front of the array
+            clusterDict[j][0], clusterDict[j][newIdx] = clusterDict[j][newIdx],clusterDict[j][0]
             next_medoids[j] = newMedoid
         # if we choose the same medoids that we chose last time, we're done
         if np.array_equal(next_medoids, medoids):
@@ -142,8 +144,10 @@ def make_tree(distance_matrix, cluster_indices, k, d,kmed=k_medoids):
     if m > k and d:
         medoids, clusters = kmed(distance_matrix, k)
         for cluster, medoid in zip(list(clusters.values()), medoids):
+            # remove the medoid before continuing
+            # cluster = np.delete(cluster, 0)
             dist_matrix = distance_matrix[np.ix_(cluster, cluster)]
-            medoids_tree[medoid], temp_clusters = make_tree(dist_matrix, cluster, k, d - 1)
+            medoids_tree[medoid], temp_clusters = make_tree(dist_matrix, cluster, k, d - 1,kmed=kmed)
             clusters_tree[medoid] = [cluster, temp_clusters]
     else:
         clusters_tree = cluster_indices
