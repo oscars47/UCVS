@@ -113,6 +113,8 @@ def get_confusion_matrix(pred, model_name, data_name):
 
     # create a confusion matrix to illustrate results
     unique_targets = pred['actual'].unique()
+    # sort so that the order is the same as the confusion matrix
+    unique_targets.sort()
     cm = confusion_matrix(pred['actual'], pred['prediction'])
     cm_df = pd.DataFrame(cm, index = unique_targets, columns = unique_targets)
     # compute accuracy
@@ -131,6 +133,11 @@ def get_confusion_matrix(pred, model_name, data_name):
     plt.xlabel('Predicted Label')
     plt.ylabel('True Label')
     plt.title(f'Confusion Matrix, accuracy = {np.round(accuracy, 4)}')
+
+    # set the ticks at the center of the cells
+    ax.set_xticks(np.arange(len(unique_targets)))
+    ax.set_yticks(np.arange(len(unique_targets)))
+    
     # add labels to axes corresponding to the class name
     ax.set_xticklabels([''] + unique_targets)
     ax.set_yticklabels([''] + unique_targets)
