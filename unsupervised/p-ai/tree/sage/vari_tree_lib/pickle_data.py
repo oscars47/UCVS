@@ -5,8 +5,6 @@ from os.path import join, isfile
 
 from tqdm import tqdm
 
-from vari_tree_lib.lightcurve import ASASSN_Lightcurve
-
 
 def lightly_pickle(data, filename, protocol=4):
     f = open(filename + '.pkl', 'wb')
@@ -41,7 +39,7 @@ def lightly_pickle_raw_data_files(filepaths, outdir):
     for i in tqdm(range(len(filepaths)), desc='Pickling data', position=0, leave=True):
         path = filepaths[i]
         f = path.split(os.sep)[-1]
-        df = pd.read_csv(path, sep='\t', usecols=["HJD", "mag", "mag_err"])
+        df = pd.read_csv(path, sep='\t', usecols=["HJD", "mag", "mag_err","ML_classification"])
         lightly_pickle(df, join(outdir, f.replace(".dat", ".df")))
 
 
@@ -60,6 +58,6 @@ if __name__ == "__main__":
     with open("all_lightcurve_names.txt", "r") as f:
         filepaths = [os.path.join(lc_dir, p.replace("\n", '')) for p in f.readlines()]
 
-    files = filepaths[:20000]
+    files = filepaths[20000:]
     lightly_pickle_raw_data_files(files, pickled_df_dir)
 
