@@ -64,4 +64,4 @@ def sample_num_curves(path, num_samples, sample_method):
 if __name__ == "__main__":
     dataset = "ASASSN"
     num_curves = 100
-    sample_num_curves(filepath, 20, )
+    sample_num_curves(filepath, 20, 'equal')
