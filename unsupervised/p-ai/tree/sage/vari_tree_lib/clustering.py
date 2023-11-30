@@ -2,10 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from line_profiler_pycharm import profile
 import networkx as nx
-rng = np.random.default_rng()
 from sklearn.datasets import make_blobs, make_classification
+rng = np.random.default_rng(1)
 from sklearn.metrics.pairwise import pairwise_distances
-
 
 def generate_blob_data(num_clusters,samples=5000):
     X = make_blobs(n_samples=samples, centers=num_clusters)[0]
@@ -79,7 +78,7 @@ def k_medoids(D, k, max_steps=100, plot=False, data=None, x=None, y=None):
         raise AttributeError("Distance matrix must be square")
     if k > m:
         raise AssertionError("Cannot have more medoids than data points")
-    medoids = np.sort(rng.choice(m, k))  # choose k starting medoids
+    medoids = np.sort(np.random.choice(m, k))  # choose k starting medoids
     next_medoids = np.copy(medoids)
     clusterDict = {}
     for i in range(max_steps):
@@ -115,13 +114,13 @@ def k_medoids(D, k, max_steps=100, plot=False, data=None, x=None, y=None):
         if np.array_equal(next_medoids, medoids):
             print(f"Lina and Sage finished in {i} iterations")
             break
-        if plot:
-            for idxs, medoid, color in zip(clusterDict.values(), data[next_medoids], ["purple", "blue", "green"]):
-                xData, yData = x[idxs], y[idxs]
-                plt.scatter(xData, yData, s=1, c=color)
-                plt.scatter(medoid[0], medoid[1], marker="X", s=20, c="red")
-            plt.show()
-            plt.clf()
+        # if plot:
+        #     for idxs, medoid, color in zip(clusterDict.values(), data[next_medoids], ["purple", "blue", "green"]):
+        #         xData, yData = x[idxs], y[idxs]
+        #         plt.scatter(xData, yData, s=1, c=color)
+        #         plt.scatter(medoid[0], medoid[1], marker="X", s=20, c="red")
+        #     plt.show()
+        #     plt.clf()
         medoids = np.copy(next_medoids)
     else:
         print("No k-medoids convergence!")
@@ -137,7 +136,7 @@ def find_distance(curves):
     return pairwise_distance_matrix(curves)
 
 
-def make_tree(distance_matrix, cluster_indices, k, d,kmed=k_medoids):
+def make_tree(distance_matrix, cluster_indices, k, d, kmed=k_medoids):
     medoids_tree = {}
     clusters_tree = {}
     m, _ = distance_matrix.shape
@@ -165,8 +164,10 @@ def tree_to_string(tree_dict,key):
     return "\t"+string
 
 
-def visualize_graph(graph_dict,title):
+def visualize_graph(graph_dict,title,fig=None,ax=None):
     G = nx.DiGraph()
+    if not graph_dict:
+        return fig, ax
 
     def add_nodes_and_edges(node, edges):
         G.add_node(node)
@@ -181,19 +182,20 @@ def visualize_graph(graph_dict,title):
     center_node = list(graph_dict.keys())[0]
 
     # Use a spring layout for visualization
-    print(center_node)
-    pos = nx.spring_layout(G)
+    pos = nx.kamada_kawai_layout(G)
     colors = ['#71B6F4']*len(pos)
     colors[0] = '#71F4B0'
     displacement = {node: center_node_position - pos[center_node] for node, center_node_position in pos.items()}
     for node, position in pos.items():
         pos[node] = position + displacement[node]
     # Draw nodes and edges
-    fig, ax = plt.subplots()
+    if fig is None:
+        fig, ax = plt.subplots()
     nx.draw(G, pos, with_labels=True, node_size=700, node_color=colors, font_size=10,ax=ax)
-    plt.title(title)
-    plt.axis('off')
-    plt.show()
+    ax.set_title(title)
+    ax.tick_params(left=False, right=False, labelleft=False,
+                    labelbottom=False, bottom=False)
+    return fig, ax
 
 if __name__ == "__main__":
     from treelib import Node, Tree
@@ -208,8 +210,8 @@ if __name__ == "__main__":
     distanceMatrix = pairwise_distance_matrix(data)
     for func, name in zip([kMedoids, k_medoids], ["Lina and Sage k_medoids", "Valenzuela et al. k_medoids"]):
         medoids_tree, clusters_tree = make_tree(distanceMatrix, np.arange(len(x)), k=3, d=3)
-        visualize_graph(medoids_tree, name)
-
+        fig, ax = visualize_graph(medoids_tree, name)
+        plt.show()
     # print(tree)
     # tree.show()
 
