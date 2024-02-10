@@ -12,7 +12,7 @@ data_dir = config["data_dir"]
 
 filepath = os.join(data_dir, 'asassn_rounded.csv')
 
-def sample_num_curves(path, num_samples, sample_method):
+def sample_num_curves(path, num_samples, sample_method, min_curves=3):
     #iterate through summary csv -- compile dict of curves by class
     if not os.path.exists('lightcurve_names_by_class.json'):
         d = {}
@@ -46,14 +46,21 @@ def sample_num_curves(path, num_samples, sample_method):
         c0_samples = num_samples / total
         samples_by_class = {}
         for key in d:
-            samples_by_class[key] = math.ceil(c0_samples * inv_ratios[key])
+            ratio = math.ceil(c0_samples * inv_ratios[key])
+            if (ratio < min_curves):
+                samples_by_class[key] = min_curves
+            else:
+                samples_by_class[key] = ratio
 
     #select, number of curves required of each class. 
     #store as txt file, new line between each curve
     samples = []
     
     for key in d:
-        samples = samples + random.sample(d[key], samples_by_class[key])
+        try:
+            samples = samples + random.sample(d[key], samples_by_class[key])
+        except:
+            samples = samples + random.sample(d[key], len(d[key]))
         
     for i in range(0, len(samples)):
         samples[i] = str(samples[i])
