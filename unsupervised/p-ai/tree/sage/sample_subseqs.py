@@ -49,45 +49,50 @@ if __name__ == "__main__":
             f.write('\n'.join(files))
 
     with open("all_lightcurve_names.txt", "r") as f:
-        filepaths = [os.path.join(lc_dir, p.replace("\n", '')) for p in f.readlines()]
+        path = os.path.join(lc_dir, f.readline().replace("\n", ''))
+    lc = ASASSN_Lightcurve.from_dat_file(path)
+    lc.plot()
 
-    filepaths = filepaths[:80000]
-
-    files_to_sample = random.sample(filepaths, int(num_samples*1.25))  # we're going to have to throw some short ones out
-    subsequences = []
-    times = []
-    for i in tqdm(range(len(files_to_sample)), desc='Sampling random subsequences', position=0, leave=True, colour="green"):
-        start = time.time()
-        f = files_to_sample[i]
-        subsequences.append(ASASSN_Lightcurve.from_dat_file(f).random_subsequence(window_duration=time_window))
-        times.append(time.time()-start)
-    print(f".dat, randomly loading and slicing {len(subsequences)} lightcurves: average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")
-    files_to_sample = [f.replace(".dat",".df.pkl").replace(lc_dir,pickled_df_dir) for f in files_to_sample]
-    subsequences = []
-    times = []
-    for i in tqdm(range(len(files_to_sample)), desc='Sampling random subsequences', position=0, leave=True, colour="green"):
-        start = time.time()
-        f = files_to_sample[i]
-        subsequences.append(ASASSN_Lightcurve.from_pickle(f).random_subsequence(window_duration=time_window))
-        times.append(time.time()-start)
-    print(f"pickle, randomly loading and slicing {len(subsequences)} lightcurves: average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")
-
-    subsequences = subsequences[:num_samples]
-
-    # outfile = "C:\\Users\\chell\\PycharmProjects\\UCVS\\unsupervised\\p-ai\\tree\\sage\\sample_pickle_dir\\sample_ASASSN1_1000_50_10.pkl"
-    outfile = os.path.join(sample_dir, f'{num_samples}_{dataset}_samples_{time_window}dw_{time_step}ds.pkl')
-    with open(outfile, 'wb') as f:
-        pickle.dump(subsequences, f, protocol=4)
-
-    subsequences = lightly_unpickle(outfile)
-
-    subsequences[0].plot()
-
-    num_loads = 1000
-    times = []
-    for i in range(num_loads):
-        start = time.time()
-        with open(outfile, 'rb') as f:
-            subsequences = pickle.load(f)
-        times.append(time.time() - start)
-    print(f"Load times ({num_loads} iters loading {num_samples} samples): average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")
+    # with open("all_lightcurve_names.txt", "r") as f:
+    #     filepaths = [os.path.join(lc_dir, p.replace("\n", '')) for p in f.readlines()]
+    #
+    # filepaths = filepaths[:80000]
+    #
+    # files_to_sample = random.sample(filepaths, int(num_samples*1.25))  # we're going to have to throw some short ones out
+    # subsequences = []
+    # times = []
+    # for i in tqdm(range(len(files_to_sample)), desc='Sampling random subsequences', position=0, leave=True, colour="green"):
+    #     start = time.time()
+    #     f = files_to_sample[i]
+    #     subsequences.append(ASASSN_Lightcurve.from_dat_file(f).random_subsequence(window_duration=time_window))
+    #     times.append(time.time()-start)
+    # print(f".dat, randomly loading and slicing {len(subsequences)} lightcurves: average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")
+    # files_to_sample = [f.replace(".dat",".df.pkl").replace(lc_dir,pickled_df_dir) for f in files_to_sample]
+    # subsequences = []
+    # times = []
+    # for i in tqdm(range(len(files_to_sample)), desc='Sampling random subsequences', position=0, leave=True, colour="green"):
+    #     start = time.time()
+    #     f = files_to_sample[i]
+    #     subsequences.append(ASASSN_Lightcurve.from_pickle(f).random_subsequence(window_duration=time_window))
+    #     times.append(time.time()-start)
+    # print(f"pickle, randomly loading and slicing {len(subsequences)} lightcurves: average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")
+    #
+    # subsequences = subsequences[:num_samples]
+    #
+    # # outfile = "C:\\Users\\chell\\PycharmProjects\\UCVS\\unsupervised\\p-ai\\tree\\sage\\sample_pickle_dir\\sample_ASASSN1_1000_50_10.pkl"
+    # outfile = os.path.join(sample_dir, f'{num_samples}_{dataset}_samples_{time_window}dw_{time_step}ds.pkl')
+    # with open(outfile, 'wb') as f:
+    #     pickle.dump(subsequences, f, protocol=4)
+    #
+    # subsequences = lightly_unpickle(outfile)
+    #
+    # subsequences[0].plot()
+    #
+    # num_loads = 1000
+    # times = []
+    # for i in range(num_loads):
+    #     start = time.time()
+    #     with open(outfile, 'rb') as f:
+    #         subsequences = pickle.load(f)
+    #     times.append(time.time() - start)
+    # print(f"Load times ({num_loads} iters loading {num_samples} samples): average {np.mean(times)}s, median {np.median(times)}s, max {np.max(times)}s, min {np.min(times)}s ")

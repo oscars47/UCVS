@@ -233,7 +233,8 @@ class ASASSN_Lightcurve(Lightcurve):
         mag = np.array([float(v.replace(">", '').replace("<", '')) for v in
                lc_df['mag'].astype(str)])  # convert the mags, remove "<" and ">"
         mag_err = lc_df['mag_err'].astype(np.float32).to_numpy()
-        obj_type = lc_df["ML_classification"]
+        # obj_type = lc_df["ML_classification"]
+        obj_type = "SAGE_NONE"
         ID = ASASSN_Lightcurve.id_from_filename(path)
         return cls(time, mag, mag_err, ID=ID,obj_type=obj_type)
 
@@ -272,14 +273,17 @@ if __name__ == "__main__":
     #     f.write('\n'.join(files))
     # exit()
 
-    with open("../all_pickled_lightcurve_names.txt", "r") as f:
+    with open("../all_lightcurve_names.txt", "r") as f:
         files = [p.replace("\n", '') for p in f.readlines()]
 
     # files = files[:20]
     # for i in tqdm(range(len(files)), desc='plotting lightcurves', position=0, leave=True):
     #     f = files[i]
     #     seq = ASASSN_Lightcurve.from_dat_file(os.path.join(lc_dir, f))
-    seq = ASASSN_Lightcurve.from_pickle(os.path.join(pickled_df_dir, random.choice(files)))
+    # with open("all_lightcurve_names.txt", "r") as f:
+    #     path = os.path.join(lc_dir, f.readline().replace("\n", ''))
+
+    seq = ASASSN_Lightcurve.from_dat_file(os.path.join(lc_dir, random.choice(files)))
         # seq.plot()
     start = seq.times[math.floor(len(seq.times) / 4)]
     end = seq.times[math.floor(3 * len(seq.times) / 4)]
