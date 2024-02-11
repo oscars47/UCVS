@@ -7,3 +7,6 @@ data_dir = absolute path here
 sample_storage_dir = absolute path here
 # where pickled data is/will be located
 pickle_data_dir = absolute path here
+
+# where to store subsequences after slicing
+sample_dir = absolute path here
