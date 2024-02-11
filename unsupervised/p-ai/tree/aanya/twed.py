@@ -6,6 +6,7 @@ import configparser
 import time
 from random import randint
 from multiprocessing import Pool
+import matplotlib.pyplot as plt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir,"sage")))  # find our config file)
 from vari_tree_lib.lightcurve import ASASSN_Lightcurve
@@ -20,7 +21,7 @@ config = config["DEFAULT"]
 data_dir = config["data_dir"]
 pickled_df_dir = config["pickle_df_dir"]
 matrix_path = config["twed_matrix"]
-subseq_dir = config["subseq_dir"]
+subseq_dir = config["sample_dir"]
 
 def dlp(A, B):
     return np.abs(A - B)
@@ -127,8 +128,7 @@ def do_twed(i,j,f,f2):
 
 
 if __name__ == "__main__":
-    names = {}
-
+    times = {}
     for num in [20,50,100,200,500]:
         st = time.perf_counter()
         num_subseqs = num # 358862
@@ -138,8 +138,6 @@ if __name__ == "__main__":
         params = []
 
         for i, f in enumerate(files):
-            # names[ASASSN_Lightcurve.id_from_filename(f)] = count
-
             for j, f2 in enumerate(files):
                 if i <= j:
                     continue
@@ -160,3 +158,11 @@ if __name__ == "__main__":
         d = time.perf_counter() - st
 
         print (num, d)
+        times[num] = d
+
+    plt.plot(times.keys(), times.values())
+    plt.title("Time to compute TWED matrix")
+    plt.xlabel("Number of Subsequences")
+    plt.ylabel("Time to compute (s)")
+    plt.savefig("twed_time.png")
+    plt.show()
