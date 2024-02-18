@@ -26,7 +26,9 @@ time_window = 250
 time_step = 10
 
 def fix_name(filename):
-    filename = filename.replace(" ", "_") + ".dat"
+    filename = filename.replace(" ", "_")
+    if ".dat" not in filename:
+        filename = filename + ".dat"
     filename = os.path.join(data_dir, "g_band_lcs", filename)
     return filename
 
