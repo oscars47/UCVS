@@ -32,9 +32,12 @@ def fix_name(filename):
 
 def choose_files(num_files, min_dpoints = 100, prev = 0):
     if os.path.exists(os.path.join(data_dir,"aws_files.txt")):
+        print("Using AWS files")
         filenames = []
-        with open(os.path.join(data_dir,"aws_files.txt"), "rb") as f:
-            filenames.append(f.readline().strip())
+        with open(os.path.join(data_dir,"aws_files.txt"), "rb") as file:
+            # read in a list of filenames
+            for line in file:
+                filenames.append(line.decode("utf-8").strip())
         rand_files = np.random.choice(filenames, num_files)
     else:
         df = pd.read_csv(os.path.join(data_dir, "asassn_rounded.csv"))
