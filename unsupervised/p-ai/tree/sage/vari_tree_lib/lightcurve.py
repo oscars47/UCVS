@@ -4,7 +4,7 @@ import random
 import sys
 import timeit
 
-from line_profiler_pycharm import profile
+# from line_profiler_pycharm import profile
 import matplotlib.colors as mcolors
 from tqdm import tqdm
 import pandas as pd, numpy as np
@@ -33,7 +33,7 @@ colors = list(mcolors.XKCD_COLORS)
 
 
 class Lightcurve:
-    @profile
+    
     def __init__(self, time_arr, mag_arr, mag_err_arr, ID, obj_type=None, parent_id=None, standardized=False):
         """
         Representation of a lightcurve (time-magnitude series)
@@ -69,7 +69,7 @@ class Lightcurve:
             return self.times[-1] - self.times[0]
         return 0
 
-    @profile
+    
     def standardize(self, verbose=False):
         """
         Standardize this lightcurve inplace: subtract mean mag and divide by std dev to get mean mag of 0 and std dev of 1
@@ -113,7 +113,7 @@ class Lightcurve:
         fig.show()
 
     # not in use, for posterity
-    @profile
+    
     def manual_get_subseq(self, start_time, end_time):
         # bounds checking
         if self.times[0] > end_time or self.times[-1] < start_time:
@@ -146,7 +146,7 @@ class Lightcurve:
         # associate with magnitude and mag errr
         # construct and return lightcurve object
 
-    @profile
+    
     def get_subseq(self, start_time, end_time):
         if self.times[0] > end_time or self.times[-1] < start_time:
             self.num_subseqs += 1
@@ -156,7 +156,7 @@ class Lightcurve:
         return Lightcurve(self.times[curve_indices], self.mags[curve_indices], self.mag_err[curve_indices], ID=f"{self.id}_{self.num_subseqs}", parent_id=self.id,
                           obj_type=self.obj_type)
 
-    @profile
+    
     def random_subsequence(self, window_duration):
         if not self.standardized:
             self.standardize()
@@ -166,7 +166,7 @@ class Lightcurve:
         end = start + window_duration
         return self.get_subseq(start, end)
 
-    @profile
+    
     def sliding_subseqs(self, window_duration, time_interval):
         """
         Sample a window of duration window_duration, then move ahead time_interval (time_interval<<window_duration) and repeat
@@ -222,7 +222,7 @@ class Lightcurve:
 # subclass of the general lightcurve class that represents an ASAS-SN lightcurve read from a .dat file
 class ASASSN_Lightcurve(Lightcurve):
     @classmethod
-    @profile
+    
     def from_dat_file(cls, path: str):
         """
         Read a provided .dat file representing an ASAS-SN lightcurve.
@@ -239,7 +239,7 @@ class ASASSN_Lightcurve(Lightcurve):
         return cls(time, mag, mag_err, ID=ID,obj_type=obj_type)
 
     @classmethod
-    @profile
+    
     def from_pickle(cls, path: str):
         """
         Read a provided .dat file representing an ASAS-SN lightcurve.

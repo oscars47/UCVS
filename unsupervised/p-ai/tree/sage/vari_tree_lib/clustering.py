@@ -64,7 +64,7 @@ def kMedoids(D, k, data=None, x=None, y=None, tmax=100):
     return M, C
 
 
-@profile
+
 def k_medoids(D, k, max_steps=100, plot=False, data=None, x=None, y=None):
     """
     k-medoids clustering, given a matrix of pairwise distances and a number of desired clusters
