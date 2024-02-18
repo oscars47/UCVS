@@ -31,8 +31,14 @@ def fix_name(filename):
     return filename
 
 def choose_files(num_files, min_dpoints = 100, prev = 0):
-    df = pd.read_csv(os.path.join(data_dir, "asassn_rounded.csv"))
-    rand_files = df["ID"].sample(num_files).to_list()
+    if os.path.exists(os.path.join(data_dir,"aws_files.txt")):
+        filenames = []
+        with open(os.path.join(data_dir,"aws_files.txt"), "rb") as f:
+            filenames.append(f.readline().strip())
+        rand_files = np.random.choice(filenames, num_files)
+    else:
+        df = pd.read_csv(os.path.join(data_dir, "asassn_rounded.csv"))
+        rand_files = df["ID"].sample(num_files).to_list()
     rand_files = [fix_name(i) for i in rand_files]
     print(rand_files)
     rand_files = [i for i in rand_files if os.path.isfile(i) and len(ASASSN_Lightcurve.from_dat_file(i).times) >= min_dpoints]
