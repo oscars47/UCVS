@@ -111,11 +111,24 @@ def get_confusion_matrix(pred, model_name, data_name):
     
     '''
 
+    actual = pred['actual']
+    prediction = pred['prediction']
+
+    # create a histrogram of the actual classes
+    fig, ax = plt.subplots()
+    ax.hist(actual, bins=range(0, 10), alpha=0.5, label='actual')
+    ax.hist(prediction, bins=range(0, 10), alpha=0.5, label='predicted')
+    ax.set_xlabel('Class')
+    ax.set_ylabel('Frequency')
+    ax.set_title(f'Class Distribution for {data_name} set')
+    ax.legend()
+    plt.savefig(os.path.join(MODEL_DIR, f'class_distribution_{model_name}_{data_name}.pdf'))
+
     # create a confusion matrix to illustrate results
     unique_targets = pred['actual'].unique()
     # sort so that the order is the same as the confusion matrix
     unique_targets.sort()
-    cm = confusion_matrix(pred['actual'], pred['prediction'])
+    cm = confusion_matrix(actual, prediction, labels=unique_targets)
     cm_df = pd.DataFrame(cm, index = unique_targets, columns = unique_targets)
     # compute accuracy
     accuracy = get_accuracy(pred)
@@ -128,6 +141,10 @@ def get_confusion_matrix(pred, model_name, data_name):
     fig, ax = plt.subplots(figsize=(10,10))
     # add colorbar
     cax = ax.matshow(cm_norm_matrix, cmap=plt.cm.viridis, alpha=0.7)
+    # add text to cells
+    for i in range(len(unique_targets)):
+        for j in range(len(unique_targets)):
+            ax.text(j, i, f'{np.round(cm[i, j], 2)}', ha='center', va='center', color='black')
     # make colorbar same size as actual plot
     fig.colorbar(cax, fraction=0.046, pad=0.04)
     plt.xlabel('Predicted Label')
@@ -146,8 +163,8 @@ def get_confusion_matrix(pred, model_name, data_name):
 
 if __name__ == '__main__':
     # define path to where your data is
-    DATA_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2024/Astro_proj/UCVS/data'
-    MODEL_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2024/Astro_proj/UCVS/supervised/fall2023/models'
+    DATA_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2023/Astro_proj/UCVS/data'
+    MODEL_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2023/Astro_proj/UCVS/supervised/fall2023/models'
 
     # load datasets #
     train_x_ds = np.load(os.path.join(DATA_DIR, 'train_x_ds.npy'))
@@ -167,7 +184,7 @@ if __name__ == '__main__':
 
     # load model
     model_name = 'oscar_model1'
-    model = load_model(os.path.join(MODEL_DIR, f'{model_name}.keras'))
+    model = load_model(os.path.join(MODEL_DIR, f'{model_name}.h5'))
 
     # predict on test set  - REMEMBER, THIS IS SACRED!!!
     predict_vars(model, test_names, x_test, y_test, f'test_pred_{model_name}.csv', MODEL_DIR)
