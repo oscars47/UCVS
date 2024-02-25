@@ -6,7 +6,7 @@ import pandas as pd
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
-from nn_prep import int_to_class
+from nn_prep import int_to_class, class_to_int
 
 
 def predict_vars(model, names, input_x, output_targets, file_name, model_dir):
@@ -114,15 +114,30 @@ def get_confusion_matrix(pred, model_name, data_name):
     actual = pred['actual']
     prediction = pred['prediction']
 
-    # create a histrogram of the actual classes
+    # convert back to int classes
+    actual_int = [class_to_int[act] for act in actual]
+    prediction_int = [class_to_int[pred] for pred in prediction]
+
+    unique_classes =len(set(actual_int + prediction_int))
+
+    # create a histogram of the predictions
     fig, ax = plt.subplots()
-    ax.hist(actual, bins=range(0, 10), alpha=0.5, label='actual')
-    ax.hist(prediction, bins=range(0, 10), alpha=0.5, label='predicted')
+    ax.hist(actual_int, bins=unique_classes, alpha=0.5, label='Actual')
+    ax.hist(prediction_int, bins=unique_classes, alpha=0.5, label='Prediction')
+    tick_locs = range(len(int_to_class))  # This assumes classes are 0-indexed and sequential
+    tick_labels = [int_to_class[i] for i in range(len(int_to_class))]  # Generate labels
+
+    ax.set_xticks(tick_locs)  # Set custom tick locations
+    ax.set_xticklabels(tick_labels, rotation=45, ha="right")  # Set custom tick labels
+
+    # Set labels and title
     ax.set_xlabel('Class')
     ax.set_ylabel('Frequency')
-    ax.set_title(f'Class Distribution for {data_name} set')
+    ax.set_title(f'Prediction Histogram: {model_name}, {data_name}')
     ax.legend()
-    plt.savefig(os.path.join(MODEL_DIR, f'class_distribution_{model_name}_{data_name}.pdf'))
+
+    plt.savefig(os.path.join(MODEL_DIR, f'prediction_histogram_{model_name}_{data_name}.pdf'))
+
 
     # create a confusion matrix to illustrate results
     unique_targets = pred['actual'].unique()
@@ -182,7 +197,7 @@ if __name__ == '__main__':
     test_names = pd.read_csv(os.path.join(DATA_DIR, 'test_names.csv'))
     test_names = test_names['0'].to_list()
 
-    # load model
+    # # load model
     model_name = 'oscar_model1'
     model = load_model(os.path.join(MODEL_DIR, f'{model_name}.h5'))
 
