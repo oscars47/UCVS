@@ -6,7 +6,7 @@ import pandas as pd
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
-from nn_prep import int_to_class
+from nn_prep import int_to_class, class_to_int
 
 
 def predict_vars(model, names, input_x, output_targets, file_name, model_dir):
@@ -111,11 +111,39 @@ def get_confusion_matrix(pred, model_name, data_name):
     
     '''
 
+    actual = pred['actual']
+    prediction = pred['prediction']
+
+    # convert back to int classes
+    actual_int = [class_to_int[act] for act in actual]
+    prediction_int = [class_to_int[pred] for pred in prediction]
+
+    unique_classes =len(set(actual_int + prediction_int))
+
+    # create a histogram of the predictions
+    fig, ax = plt.subplots()
+    ax.hist(actual_int, bins=unique_classes, alpha=0.5, label='Actual')
+    ax.hist(prediction_int, bins=unique_classes, alpha=0.5, label='Prediction')
+    tick_locs = range(len(int_to_class))  # This assumes classes are 0-indexed and sequential
+    tick_labels = [int_to_class[i] for i in range(len(int_to_class))]  # Generate labels
+
+    ax.set_xticks(tick_locs)  # Set custom tick locations
+    ax.set_xticklabels(tick_labels, rotation=45, ha="right")  # Set custom tick labels
+
+    # Set labels and title
+    ax.set_xlabel('Class')
+    ax.set_ylabel('Frequency')
+    ax.set_title(f'Prediction Histogram: {model_name}, {data_name}')
+    ax.legend()
+
+    plt.savefig(os.path.join(MODEL_DIR, f'prediction_histogram_{model_name}_{data_name}.pdf'))
+
+
     # create a confusion matrix to illustrate results
     unique_targets = pred['actual'].unique()
     # sort so that the order is the same as the confusion matrix
     unique_targets.sort()
-    cm = confusion_matrix(pred['actual'], pred['prediction'])
+    cm = confusion_matrix(actual, prediction, labels=unique_targets)
     cm_df = pd.DataFrame(cm, index = unique_targets, columns = unique_targets)
     # compute accuracy
     accuracy = get_accuracy(pred)
@@ -128,6 +156,10 @@ def get_confusion_matrix(pred, model_name, data_name):
     fig, ax = plt.subplots(figsize=(10,10))
     # add colorbar
     cax = ax.matshow(cm_norm_matrix, cmap=plt.cm.viridis, alpha=0.7)
+    # add text to cells
+    for i in range(len(unique_targets)):
+        for j in range(len(unique_targets)):
+            ax.text(j, i, f'{np.round(cm[i, j], 2)}', ha='center', va='center', color='black')
     # make colorbar same size as actual plot
     fig.colorbar(cax, fraction=0.046, pad=0.04)
     plt.xlabel('Predicted Label')
@@ -146,8 +178,8 @@ def get_confusion_matrix(pred, model_name, data_name):
 
 if __name__ == '__main__':
     # define path to where your data is
-    DATA_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2024/Astro_proj/UCVS/data'
-    MODEL_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2024/Astro_proj/UCVS/supervised/fall2023/models'
+    DATA_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2023/Astro_proj/UCVS/data'
+    MODEL_DIR = '/Users/oscarscholin/Desktop/Pomona/Senior_Year/Fall2023/Astro_proj/UCVS/supervised/fall2023/models'
 
     # load datasets #
     train_x_ds = np.load(os.path.join(DATA_DIR, 'train_x_ds.npy'))
@@ -165,9 +197,9 @@ if __name__ == '__main__':
     test_names = pd.read_csv(os.path.join(DATA_DIR, 'test_names.csv'))
     test_names = test_names['0'].to_list()
 
-    # load model
+    # # load model
     model_name = 'oscar_model1'
-    model = load_model(os.path.join(MODEL_DIR, f'{model_name}.keras'))
+    model = load_model(os.path.join(MODEL_DIR, f'{model_name}.h5'))
 
     # predict on test set  - REMEMBER, THIS IS SACRED!!!
     predict_vars(model, test_names, x_test, y_test, f'test_pred_{model_name}.csv', MODEL_DIR)
