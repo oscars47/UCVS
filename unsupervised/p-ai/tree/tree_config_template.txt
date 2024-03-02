@@ -12,4 +12,4 @@ pickle_data_dir = absolute path here
 sample_dir = absolute path here
 
 # where to store the calculated TWED matrix
-twed_matrix = absolute path here
+twed_mat_dir = absolute path here

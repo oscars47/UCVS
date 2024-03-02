@@ -7,6 +7,7 @@ import time
 from random import randint
 from multiprocessing import Pool
 import matplotlib.pyplot as plt
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir,"sage")))  # find our config file)
 from vari_tree_lib.lightcurve import ASASSN_Lightcurve
@@ -20,7 +21,7 @@ config = config["DEFAULT"]
 # specify the path to the "g_band" folder of the UCVS data in your config file
 data_dir = config["data_dir"]
 pickled_df_dir = config["pickle_df_dir"]
-matrix_path = config["twed_matrix"]
+twed_mat_dir = config["twed_mat_dir"]
 subseq_dir = config["sample_dir"]
 
 def dlp(A, B):
@@ -159,6 +160,13 @@ if __name__ == "__main__":
 
         print (num, d)
         times[num] = d
+
+        curr_time = time.strftime("%Y%m%d-%H%M")
+        np.savetxt(os.path.join(twed_mat_dir, curr_time)+".csv", twed_mat, delimiter=",")
+
+        with open(os.path.join(twed_mat_dir, curr_time)+".txt", "w") as txt_file:
+            for f in files:
+                txt_file.write(f + "\n")
 
     plt.plot(times.keys(), times.values())
     plt.title("Time to compute TWED matrix")
