@@ -144,9 +144,10 @@ class Tree:
             return current_node.id, current_node.medoid_idx
         sub_dist_mtrx = self.dist_matrix[np.array([c.medoid_idx for c in current_node.children]),subseq_idx]
         closest_child = current_node.children[np.argmin(sub_dist_mtrx)]
-        return self.compare_subsequence(closest_child, subseq_idx)
+        return self.compare_subsequence(closest_child, subseq_idx, lc_idx)
 
 def test_add():
+    # NOTE: this test erroniously assumes that the correct behavior of the algorithm is for the subsequence to arrive at the leaf that is most similar to it - this is usually, but not always, how the algorithm works so this test is not accurate.  
     k = 3
     max_depth = 10
     samples = 2000
