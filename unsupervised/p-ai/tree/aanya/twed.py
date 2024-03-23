@@ -166,7 +166,7 @@ if __name__ == "__main__":
 
         with open(os.path.join(twed_mat_dir, curr_time)+".txt", "w") as txt_file:
             for f in files:
-                txt_file.write(f + "\n")
+                txt_file.write(f.split(os.sep)[-1] + "\n")
 
     plt.plot(times.keys(), times.values())
     plt.title("Time to compute TWED matrix")
