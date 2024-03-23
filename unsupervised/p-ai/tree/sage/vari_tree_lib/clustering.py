@@ -11,8 +11,11 @@ def generate_blob_data(num_clusters,samples=5000):
     return np.array([v[0] for v in X]), np.array([v[1] for v in X]), X
 
 
+# def pairwise_distance_matrix(data):
+#     return np.linalg.norm(data[:, None, :] - data[None, :, :], axis=-1)
+
 def pairwise_distance_matrix(data):
-    return np.linalg.norm(data[:, None, :] - data[None, :, :], axis=-1)
+    return data
 
 
 def generate_scattered_data(num_classes):

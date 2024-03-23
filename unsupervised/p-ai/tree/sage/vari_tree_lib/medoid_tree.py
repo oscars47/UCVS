@@ -3,18 +3,26 @@ import os
 import random
 import sys
 import timeit
+import configparser
 
 import matplotlib.cm
 import numpy as np
 from matplotlib import pyplot as plt
 from line_profiler_pycharm import profile
-import networkx as nx
+# import networkx as nx
 
 rng = np.random.default_rng()
-from sklearn.datasets import make_blobs, make_classification
-from sklearn.metrics.pairwise import pairwise_distances
+# from sklearn.datasets import make_blobs, make_classification
+# from sklearn.metrics.pairwise import pairwise_distances
 from clustering import k_medoids, generate_blob_data, pairwise_distance_matrix, visualize_graph
 import matplotlib.colors as mcolors
+
+grandparentDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir))  # find our config file
+config = configparser.ConfigParser()
+config.read(os.path.join(grandparentDir, "tree_config.txt"))
+config = config["DEFAULT"]
+# specify the path to the "g_band" folder of the UCVS data in your config file
+twed_mat_dir = config["twed_mat_dir"]
 
 node_id_counter = -1
 
@@ -150,9 +158,10 @@ def test_add():
     # NOTE: this test erroniously assumes that the correct behavior of the algorithm is for the subsequence to arrive at the leaf that is most similar to it - this is usually, but not always, how the algorithm works so this test is not accurate.  
     k = 3
     max_depth = 10
-    samples = 2000
-    x, y, alldata = generate_blob_data(num_clusters=k, samples=samples)
-    subdata = alldata[:500]
+    samples = 20
+    # x, y, alldata = generate_blob_data(num_clusters=k, samples=samples)
+    alldata = np.loadtxt(os.path.join(twed_mat_dir, "20240302-1515")+".csv", delimiter=",")
+    subdata = alldata[:5, :5]
 
     our_tree = Tree(subdata, k, max_depth)
 
